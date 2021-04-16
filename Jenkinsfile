@@ -42,6 +42,16 @@ pipeline {
                 }
             }
         }
+        stage ('Deploy Frontend') {
+            steps {
+                dir('frontend') {
+                    git credentialsId: 'GithubCredential', url: 'https://github.com/dougvigliazzi/tasks--frontend'
+                    sh '/usr/local/apache-maven-3.6.0/bin/mvn clean package'
+                    deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://192.168.0.118:8001/')], contextPath: 'tasks', war: 'target/tasks.war'
+                }
+                
+            }
+        }
     }
 }
 
