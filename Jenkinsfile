@@ -52,6 +52,14 @@ pipeline {
                 
             }
         }
+        stage ('Functional Test') {
+            steps {
+                dir('functional-test') {
+                    git credentialsId: 'GithubCredential', url: 'https://github.com/dougvigliazzi/tasks-functional-tests'
+                    sh '/usr/local/apache-maven-3.6.0/bin/mvn test'
+                }
+            }
+        }
     }
 }
 
