@@ -62,8 +62,8 @@ pipeline {
         }
         stage ('Deploy Prod') {
             steps {
-                sh '/usr/local/bin/docker-compose build'
-                sh '/usr/local/bin/docker-compose up -d'
+                sh 'docker-compose build'
+                sh 'docker-compose up -d'
             }
         }
     }
