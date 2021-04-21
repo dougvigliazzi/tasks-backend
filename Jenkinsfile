@@ -66,13 +66,13 @@ pipeline {
                 sh 'docker-compose up -d'
             }
         }
-        stage ('Health Check') {
-            steps {
-                sleep(300)
-                dir('functional-test') {
-                    sh 'mvn verify -Dskip.surefire.tests'
-                }
-            }
+        //stage ('Health Check') {
+        //    steps {
+        //        sleep(300)
+        //        dir('functional-test') {
+        //            sh 'mvn verify -Dskip.surefire.tests'
+        //        }
+        //    }
         }
     }
     post {
