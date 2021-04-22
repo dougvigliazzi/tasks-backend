@@ -31,7 +31,7 @@ pipeline {
         }
         stage ('Deploy Backend') {
             steps {
-                deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://192.168.0.118:8001/')], contextPath: 'tasks-backend', war: 'target/tasks-backend.war'
+                deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://192.168.0.120:8001/')], contextPath: 'tasks-backend', war: 'target/tasks-backend.war'
             }
         }
         stage ('API Test') {
@@ -47,7 +47,7 @@ pipeline {
                 dir('frontend') {
                     git credentialsId: 'GithubCredential', url: 'https://github.com/dougvigliazzi/tasks-frontend'
                     sh 'mvn clean package'
-                    deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://192.168.0.118:8001/')], contextPath: 'tasks', war: 'target/tasks.war'
+                    deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://192.168.0.120:8001/')], contextPath: 'tasks', war: 'target/tasks.war'
                 }
                 
             }
@@ -68,7 +68,7 @@ pipeline {
         }
         stage ('Health Check') {
             steps {
-                sleep(5)
+                sleep(15)
                 dir('functional-test') {
                     sh 'mvn test -Dskip.surefire.tests'
                 }
