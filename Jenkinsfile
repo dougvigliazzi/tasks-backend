@@ -70,7 +70,7 @@ pipeline {
             steps {
                 sleep(5)
                 dir('functional-test') {
-                    sh 'echo FunctionalTest'//'mvn verify -Dskip.surefire.tests'
+                    sh 'mvn test -Dskip.surefire.tests'
                 }
             }
         }
