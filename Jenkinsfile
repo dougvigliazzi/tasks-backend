@@ -31,7 +31,7 @@ pipeline {
         }
         stage ('Deploy Backend') {
             steps {
-                deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://acer:8001/')], contextPath: 'tasks-backend', war: 'target/tasks-backend.war'
+                deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://192.168.4.32:8001/')], contextPath: 'tasks-backend', war: 'target/tasks-backend.war'
             }
         }
         stage ('API Test') {
