@@ -17,13 +17,13 @@ pipeline {
             }
             steps {
                 withSonarQubeEnv('SONAR_LOCAL') {
-                    sh "${scannerHome}/bin/sonar-scanner -e -Dsonar.projectKey=PipelineBackend -Dsonar.host.url=http://192.168.0.120:9000 -Dsonar.login=42b08497d4fa7cef6ec9deaa8b77d6659efd6e2d -Dsonar.java.binaries=target -Dsonar.coverage.exclusions=**/mvn/**,**/src/test/**,**/model/**,**Application.java"
+                    sh "${scannerHome}/bin/sonar-scanner -e -Dsonar.projectKey=PipelineBackend -Dsonar.host.url=http://acer:9000 -Dsonar.login=42b08497d4fa7cef6ec9deaa8b77d6659efd6e2d -Dsonar.java.binaries=target -Dsonar.coverage.exclusions=**/mvn/**,**/src/test/**,**/model/**,**Application.java"
                 }
             }
         }
         stage ('Quality Gate') {
             steps {
-                sleep(15)
+                sleep(150)
                 timeout(time: 1, unit:'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
@@ -31,7 +31,7 @@ pipeline {
         }
         stage ('Deploy Backend') {
             steps {
-                deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://192.168.0.120:8001/')], contextPath: 'tasks-backend', war: 'target/tasks-backend.war'
+                deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://acer:8001/')], contextPath: 'tasks-backend', war: 'target/tasks-backend.war'
             }
         }
         stage ('API Test') {
@@ -47,7 +47,7 @@ pipeline {
                 dir('frontend') {
                     git credentialsId: 'GithubCredential', url: 'https://github.com/dougvigliazzi/tasks-frontend'
                     sh 'mvn clean package'
-                    deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://192.168.0.120:8001/')], contextPath: 'tasks', war: 'target/tasks.war'
+                    deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://acer:8001/')], contextPath: 'tasks', war: 'target/tasks.war'
                 }
                 
             }
