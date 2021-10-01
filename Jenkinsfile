@@ -3,12 +3,12 @@ pipeline {
     stages {
         stage ('Build Backend') {
             steps {
-                sh '/usr/local/apache-maven-3.6.0/bin/mvn clean package -DskipTests=true'
+                sh 'mvn clean package -DskipTests=true'
             }
         }
         stage ('Unit Test ') {
             steps {
-                sh '/usr/local/apache-maven-3.6.0/bin/mvn test'
+                sh 'mvn test'
             }
         }
         stage ('Sonar Analysis') {
@@ -17,7 +17,7 @@ pipeline {
             }
             steps {
                 withSonarQubeEnv('SONAR') {
-                    sh "${scannerHome}/bin/sonar-scanner -e -Dsonar.projectKey=DeployBack -Dsonar.host.url=http://192.168.0.120:9000 -Dsonar.login=6852b0c4c4cc5d20de9eed3da28ebea1c240372a -Dsonar.java.binaries=target -Dsonar.coverage.exclusions=**/mvn/**,**/src/test/**,**/model/**,**Application.java"
+                    sh "${scannerHome}/bin/sonar-scanner -e -Dsonar.projectKey=PipelineBackend -Dsonar.host.url=http://acer:9000 -Dsonar.login=42b08497d4fa7cef6ec9deaa8b77d6659efd6e2d -Dsonar.java.binaries=target -Dsonar.coverage.exclusions=**/mvn/**,**/src/test/**,**/model/**,**Application.java"
                 }
             }
         }
@@ -31,14 +31,14 @@ pipeline {
         }
         stage ('Deploy Backend') {
             steps {
-                deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://192.168.0.118:8001/')], contextPath: 'tasks-backend', war: 'target/tasks-backend.war'
+                deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://acer:8001/')], contextPath: 'tasks-backend', war: 'target/tasks-backend.war'
             }
         }
         stage ('API Test') {
             steps {
                 dir('api-test') {
                     git credentialsId: 'GithubCredential', url: 'https://github.com/dougvigliazzi/tasks-api-test'
-                    sh '/usr/local/apache-maven-3.6.0/bin/mvn test'
+                    sh 'mvn test'
                 }
             }
         }
@@ -46,8 +46,8 @@ pipeline {
             steps {
                 dir('frontend') {
                     git credentialsId: 'GithubCredential', url: 'https://github.com/dougvigliazzi/tasks-frontend'
-                    sh '/usr/local/apache-maven-3.6.0/bin/mvn clean package'
-                    deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://192.168.0.118:8001/')], contextPath: 'tasks', war: 'target/tasks.war'
+                    sh 'mvn clean package'
+                    deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://acer:8001/')], contextPath: 'tasks', war: 'target/tasks.war'
                 }
                 
             }
@@ -56,16 +56,30 @@ pipeline {
             steps {
                 dir('functional-test') {
                     git credentialsId: 'GithubCredential', url: 'https://github.com/dougvigliazzi/tasks-functional-tests'
-                    sh '/usr/local/apache-maven-3.6.0/bin/mvn test'
+                    sh 'mvn test'
                 }
             }
         }
         stage ('Deploy Prod') {
             steps {
-                sh '/usr/local/bin/docker-compose build'
-                sh '/usr/local/bin/docker-compose up -d'
+                sh 'docker-compose build'
+                sh 'docker-compose up -d'
             }
         }
+        stage ('Health Check') {
+            steps {
+                sleep(15)
+                dir('functional-test') {
+                    sh 'mvn test -Dskip.surefire.tests'
+                }
+            }
+        }
+    }
+    post {
+    always {
+        junit allowEmptyResults: true, testResults: 'functional-test/target/failsafe-reports/*.xml, functional-test/target/surefire-reports/*.xml, api-test/target/surefire-reports/*.xml'
+        archiveArtifacts artifacts: 'target/tasks-bakend.war, frontend/target/tasks.war', followSymlinks: false, onlyIfSuccessful: true
+    }
     }
 }
 
