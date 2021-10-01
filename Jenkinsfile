@@ -16,7 +16,7 @@ pipeline {
                 scannerHome = tool 'SONAR_SCANNER'
             }
             steps {
-                withSonarQubeEnv('SONAR') {
+                withSonarQubeEnv('SONAR_LOCAL') {
                     sh "${scannerHome}/bin/sonar-scanner -e -Dsonar.projectKey=PipelineBackend -Dsonar.host.url=http://acer:9000 -Dsonar.login=42b08497d4fa7cef6ec9deaa8b77d6659efd6e2d -Dsonar.java.binaries=target -Dsonar.coverage.exclusions=**/mvn/**,**/src/test/**,**/model/**,**Application.java"
                 }
             }
