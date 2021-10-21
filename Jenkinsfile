@@ -17,7 +17,7 @@ pipeline {
             }
             steps {
                 withSonarQubeEnv('SONAR_LOCAL') 
-                withCredentials([string(credentialsId: 'sQ-Tbend', variable: 'sonarLogin')]){
+                withCredentials([credentialsId: 'sQ-Tbend', variable: 'sonarLogin']){
                     sh "${scannerHome}/bin/sonar-scanner -e -Dsonar.projectKey=PipelineBackend -Dsonar.host.url=http://acer:9000  -Dsonar.login=${sonarLogin} -Dsonar.java.binaries=target -Dsonar.coverage.exclusions=**/mvn/**,**/src/test/**,**/model/**,**Application.java"
                 }
             }
