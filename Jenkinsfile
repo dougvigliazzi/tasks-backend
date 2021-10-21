@@ -17,7 +17,8 @@ pipeline {
             }
             steps {
                 withSonarQubeEnv('SONAR_LOCAL') {
-                    sh "${scannerHome}/bin/sonar-scanner -e -Dsonar.projectKey=PipelineBackend -Dsonar.host.url=http://acer:9000  -Dsonar.login=${8ddf5663-2aed-4522-b18c-b79611331010} -Dsonar.java.binaries=target -Dsonar.coverage.exclusions=**/mvn/**,**/src/test/**,**/model/**,**Application.java"
+                    withCredentials([string(credentialsId: '8ddf5663-2aed-4522-b18c-b79611331010', variable: 'sonarLogin')])
+                    sh "${scannerHome}/bin/sonar-scanner -e -Dsonar.projectKey=PipelineBackend -Dsonar.host.url=http://acer:9000  -Dsonar.login=${sonarLogin} -Dsonar.java.binaries=target -Dsonar.coverage.exclusions=**/mvn/**,**/src/test/**,**/model/**,**Application.java"
                 }
             }
         }
